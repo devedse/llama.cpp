@@ -7,6 +7,9 @@ void llama_model_qwen35moe_mtp::load_arch_hparams(llama_model_loader & ml) {
     ml.get_key_or_arr(LLM_KV_ROPE_DIMENSION_SECTIONS,    hparams.rope_sections, 4, true);
 
     ml.get_key(LLM_KV_NEXTN_PREDICT_LAYERS, hparams.nextn_predict_layers, false);
+    if (hparams.nextn_predict_layers == 0) {
+        hparams.nextn_predict_layers = 1;
+    }
     GGML_ASSERT(hparams.nextn_predict_layers > 0   && "QWEN35MOE_MTP requires nextn_predict_layers > 0");
     GGML_ASSERT(hparams.nextn_predict_layers <= hparams.n_layer);
     GGML_ASSERT(hparams.n_expert > 0 && "QWEN35MOE_MTP requires n_expert > 0");
