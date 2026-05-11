@@ -818,13 +818,24 @@ private:
             params_base.speculative.draft.cparams.n_rs_seq = 0;
         }
 
-        //TODO: generalize if this is ok, we should load <arch_name>_mtp arch?
         if (params_base.speculative.type == COMMON_SPECULATIVE_TYPE_MTP) {
-            SRV_INF("loading MTP head from '%s' (override_arch=qwen35_mtp)\n",
-                    params_base.model.path.c_str());
+            const char * trunk_arch = model->arch_name().c_str();
+            const char * mtp_arch = nullptr;
+
+            if (std::string(trunk_arch) == "qwen35moe") {
+                mtp_arch = "qwen35moe_mtp";
+            } else if (std::string(trunk_arch) == "qwen35") {
+                mtp_arch = "qwen35_mtp";
+            } else {
+                SRV_ERR("MTP not supported for trunk architecture '%s'\n", trunk_arch);
+                return false;
+            }
+
+            SRV_INF("loading MTP head from '%s' (override_arch=%s)\n",
+                    params_base.model.path.c_str(), mtp_arch);
 
             auto mparams_mtp = common_model_params_to_llama(params_base);
-            mparams_mtp.override_arch = "qwen35_mtp";
+            mparams_mtp.override_arch = mtp_arch;
             mparams_mtp.use_mmap = false;
 
             model_mtp.reset(llama_model_load_from_file(params_base.model.path.c_str(), mparams_mtp));
