@@ -820,7 +820,7 @@ private:
 
         if (params_base.speculative.type == COMMON_SPECULATIVE_TYPE_MTP) {
             char trunk_arch[128] = {};
-            if (llama_model_meta_val_str(model.get(), "general.architecture", trunk_arch, sizeof(trunk_arch)) <= 0) {
+            if (llama_model_meta_val_str(model, "general.architecture", trunk_arch, sizeof(trunk_arch)) <= 0) {
                 SRV_ERR("failed to read trunk model architecture from '%s'\n", params_base.model.path.c_str());
                 return false;
             }
